@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — 2026-11-26
+
+### 제작 과정 보고서
+- **`/harness-init:report <기능>`** → `.harness/reports/<기능>.html`: 판정 · 규칙별 결과와 과정 아이콘 · 확인 깊이 · 망가뜨려 보기 · 사람 확인 목록 · 타임라인(일지 + 커밋 + 자동 검사) · 캡처(파일 내장). 라이트/다크, 모바일 대응.
+- **`scripts/journal.sh`**: 작업 일지(`.harness/journal/<기능>.jsonl`) 기록. `rule-tests` · `visual` · `sync` · `check-feature`가 단계마다 기록하고, `sync` · `check-feature`는 끝에 보고서를 만든다.
+- Stop 훅이 검사 결과를 `.git/harness/checks.jsonl`에 기록 (로컬 전용).
+- 망가뜨려도 통과한 규칙은 "통과"로 세지 않고 "⚠️ 통과 (테스트 부실)"로 표시.
+
+### 고침
+- Stop 훅 변경 감지에서 `.harness/`(일지)와 `.claude/harness-synced/`(스냅샷)를 제외 — 일지 기록만으로 검사가 다시 돌지 않는다.
+
 ## 0.3.0 — 2026-11-26
 
 ### 문서 중심 흐름 — "코드 짜줘" 대신 "문서 고치고 sync"

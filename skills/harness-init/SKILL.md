@@ -107,6 +107,11 @@ AskUserQuestion으로 **두 가지만** 묻는다 (진단으로 알 수 있는 �
 
 `CLAUDE.md`(없으면 `AGENTS.md`, 둘 다 없으면 새로 `CLAUDE.md`)에 `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE-harness.md`의 내용을 `## 하네스` 절로 추가한다. 이미 비슷한 절이 있으면 합친다. 고른 수준에 없는 단계 줄은 뺀다.
 
+### 공통 — 제작 과정 보고서 준비 (표준/전체)
+
+- `.gitignore`에 `.harness/reports/`를 추가한다 (보고서는 언제든 다시 만들 수 있다). 일지 `.harness/journal/`은 커밋 대상.
+- 첫 기능 한 바퀴를 돌 때 `rule-tests`의 일지 규칙대로 기록하고, 끝에 `node "${CLAUDE_PLUGIN_ROOT}/scripts/report.mjs" <기능>`으로 보고서를 만들어 경로를 안내한다.
+
 ## 4. 확인
 
 - `check` 한 번, Stop 훅 스크립트 한 번 돌려 둘 다 통과하는지 본다.

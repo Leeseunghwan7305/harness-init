@@ -60,6 +60,23 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 - 규칙 번호는 **재사용·재배열하지 않는다** (R3을 지웠으면 다음 규칙은 R11). 번호가 곧 테스트 이름이다.
 - 이미 구현된 기능에 문서를 처음 붙이는 경우: `bash <플러그인>/scripts/spec-status.sh --mark-all`로 기준선을 잡는다 (`setup`이 물어본다).
 
+## 제작 과정 보고서 — `/harness-init:report <기능>`
+
+기능을 만들면서 Claude가 남긴 일지로 **어떻게 만들어졌는지**를 HTML 한 장으로 보여준다.
+
+| 들어가는 것 | 재료 |
+| --- | --- |
+| 판정 · 규칙 통과 수 · 망가뜨려 보기 잡은 수 · 자동 검사 통과/막힘 · 커밋 수 | 전부 |
+| 규칙별 결과 · **과정 아이콘**(🧪→🔴→🛠→🟢→🧨) · 확인 깊이 · 테스트 · 커밋 | 규칙 문서 + 일지 + git |
+| 사람이 확인할 것 | 일지 `todo` |
+| 타임라인 (일지 · 커밋 · Stop 훅 자동 검사를 시간순으로) | 일지 + git + `.git/harness/checks.jsonl` |
+| 캡처 (파일 안에 내장 — 파일 하나로 공유) | 일지 `shot` |
+
+- 일지: `.harness/journal/<기능>.jsonl` — `rule-tests` · `sync` · `check-feature`가 단계마다 `scripts/journal.sh`로 자동 기록. **커밋해서 팀과 공유.**
+- 보고서: `.harness/reports/<기능>.html` — 언제든 다시 만들 수 있으니 `.gitignore` 권장 (`setup`이 추가).
+- 망가뜨려도 통과한 규칙은 "통과"로 세지 않는다 (⚠️ 테스트 부실).
+- `check-feature` · `sync`는 끝날 때 보고서를 자동으로 만든다.
+
 ## Stop 훅은 옵트인
 
 플러그인을 켜도 **`.claude/harness.conf`가 있는 프로젝트에서만** 검사가 돈다 (`templates/harness.conf` 참고).
@@ -81,6 +98,7 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 ```bash
 bash tests/verify.test.sh      # Stop 훅 시나리오 테스트
 bash tests/spec-sync.test.sh   # 문서 diff · 알림 훅 테스트
+bash tests/report.test.sh      # 일지 · 보고서 · 검사 기록 테스트 (node 필요)
 claude plugin validate .       # 매니페스트 검사
 ```
 

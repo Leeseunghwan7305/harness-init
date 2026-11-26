@@ -41,3 +41,19 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 ## 4. 보고
 
 `harness-report` 스킬의 형식으로, 규칙별로 테스트 이름·통과 여부·망가뜨려 보기 결과(실패함 ✅ / 그래도 통과 ❌)·확인 깊이를 적는다.
+
+## 일지 남기기 (제작 과정 보고서 재료)
+
+단계마다 한 줄씩 기록한다. 기능 이름은 문서 이름과 같게.
+
+```bash
+J="${CLAUDE_PLUGIN_ROOT}/scripts/journal.sh"
+bash "$J" <기능> test R3 "tests/calc.test.ts › R3 곱셈 우선"     # 테스트 작성
+bash "$J" <기능> red R3 "expected 14, received 20"               # 먼저 실패 확인
+bash "$J" <기능> impl R3 "src/calc.ts — 우선순위 파서"            # 구현
+bash "$J" <기능> green R3                                        # 통과
+bash "$J" <기능> mutant-killed R3 "우선순위 표를 같게 → 실패함"   # 망가뜨려 보기 (잡음)
+bash "$J" <기능> mutant-survived R3 "…를 바꿔도 통과"             # 망가뜨려 보기 (못 잡음) → 테스트 고친 뒤 fix·mutant-killed 기록
+```
+
+`red`를 건너뛰지 않는다 — 먼저 실패하는 걸 봐야 테스트가 뭔가를 검사한다는 증거가 된다.

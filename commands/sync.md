@@ -65,3 +65,9 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" --mark <기능이름>
 - R3 ✅ 테스트·코드 삭제 (사용자 승인)
 반영 완료 표시: calculator
 ```
+
+## 일지 · 보고서
+
+- 시작할 때 `journal.sh <기능> spec - "sync: +R10 ~R7 -R3"`, 규칙별 단계는 `rule-tests`의 일지 규칙대로 기록한다.
+- verifier 결과는 규칙마다 `verify R7 "✅ 단위 테스트까지"`, 사람 확인은 `todo`, 마지막에 `verdict`로 기록한다.
+- 끝나면 `node "${CLAUDE_PLUGIN_ROOT}/scripts/report.mjs" <기능>`로 제작 과정 보고서를 만들고 경로를 알려준다.

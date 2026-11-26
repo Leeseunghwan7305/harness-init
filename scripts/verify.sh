@@ -72,13 +72,12 @@ modified=""
 if [ "$in_git" = "1" ]; then
   base="HEAD"
   git rev-parse -q --verify HEAD >/dev/null 2>&1 || base="4b825dc642cb6eb9a060e54bf8d69288fbee4904" # 빈 트리
-  # WATCH_PATHS 는 공백으로 나뉜 pathspec 목록이므로 일부러 따옴표 없이 펼친다.
-  # shellcheck disable=SC2086
-  tracked="$(git diff --relative --name-only "$base" -- $WATCH_PATHS 2>/dev/null)"
-  # shellcheck disable=SC2086
-  modified="$(git diff --relative --name-only --diff-filter=M "$base" -- $WATCH_PATHS 2>/dev/null)"
-  # shellcheck disable=SC2086
-  untracked="$(git ls-files --others --exclude-standard -- $WATCH_PATHS 2>/dev/null)"
+  # 감시 경로(pathspec) + 일지·스냅샷은 코드 변경이 아니므로 제외
+  read -r -a pathspec <<<"$WATCH_PATHS"
+  pathspec+=(":(exclude).harness" ":(exclude).claude/harness-synced")
+  tracked="$(git diff --relative --name-only "$base" -- "${pathspec[@]}" 2>/dev/null)"
+  modified="$(git diff --relative --name-only --diff-filter=M "$base" -- "${pathspec[@]}" 2>/dev/null)"
+  untracked="$(git ls-files --others --exclude-standard -- "${pathspec[@]}" 2>/dev/null)"
   changed="$(printf '%s\n%s\n' "$tracked" "$untracked" | sed '/^$/d' | sort -u)"
 
   if [ -z "$changed" ]; then
@@ -87,11 +86,10 @@ if [ "$in_git" = "1" ]; then
   fi
 
   # 현재 상태 지문: 감시 경로 diff + 미추적 파일 내용 + 검사 명령
-  # shellcheck disable=SC2086
   fp="$(
     {
       printf '%s\n' "$CHECK_CMD"
-      git diff --relative --binary "$base" -- $WATCH_PATHS 2>/dev/null
+      git diff --relative --binary "$base" -- "${pathspec[@]}" 2>/dev/null
       printf '%s\n' "$untracked" | while IFS= read -r f; do
         [ -f "$f" ] && printf '%s %s\n' "$f" "$(git hash-object -- "$f")"
       done
@@ -123,9 +121,16 @@ else
 fi
 rc=$?
 
+# 제작 과정 보고서용 자동 검사 기록 (로컬 전용, .git/harness/checks.jsonl)
+log_check() {
+  printf '{"ts":"%s","result":"%s","n":%s,"max":%s}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$1" "$2" "$MAX_RETRIES" >>"$state_dir/checks.jsonl" 2>/dev/null || true
+}
+
 if [ "$rc" -ne 0 ]; then
   fails=$((fails + 1))
   printf '%s\n' "$fails" >"$state_dir/fails" 2>/dev/null || true
+  if [ "$rc" -eq 124 ]; then log_check timeout "$fails"; else log_check fail "$fails"; fi
   {
     if [ "$rc" -eq 124 ]; then
       echo "✗ 검사가 ${TIMEOUT_SEC}초를 넘겨 중단됨 (${fails}/${MAX_RETRIES})."
@@ -140,6 +145,7 @@ if [ "$rc" -ne 0 ]; then
 fi
 
 rm -f "$state_dir/fails"
+log_check pass 0
 [ -n "$fp" ] && printf '%s\n' "$fp" >"$state_dir/last_ok" 2>/dev/null
 
 # ── 테스트만 고쳐서 통과시켰는지 경고 (상태마다 한 번) ─────────

@@ -22,3 +22,7 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 - 마음에 드는 캡처는 기준 캡처로 커밋할지 사용자에게 묻는다. 다음부터는 그게 시안이다.
 - Playwright를 쓰는 프로젝트면 `toHaveScreenshot` 픽셀 비교 테스트 추가를 제안한다 (실수로 바뀐 곳을 자동으로 잡음).
 - 보고는 `harness-report` 형식: 상태별 ✅/❌, 고친 것, 캡처 경로, 사람이 볼 것.
+
+## 일지 남기기
+
+캡처마다 `bash "${CLAUDE_PLUGIN_ROOT}/scripts/journal.sh" <기능> shot R2 artifacts/screens/<기능>/<상태>.png` — 보고서에 이미지가 들어간다. 고친 것은 `fix`로 기록한다.

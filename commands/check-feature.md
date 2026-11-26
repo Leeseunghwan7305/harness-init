@@ -13,3 +13,4 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash, Agent
 5. **verifier 서브에이전트**에게 검사시킨다. 넘기는 것은 기능 이름과 문서 경로뿐 — 구현 설명·내 판단은 넘기지 않는다.
 6. verifier 결과와 내 결과를 합쳐 `harness-report` 형식으로 보고한다. 둘이 다르면 다르다고 그대로 적는다 (verifier의 ❌를 덮지 않는다).
 7. 모든 규칙이 ✅이면 반영 완료로 표시한다: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" --mark $ARGUMENTS`. 이후 문서를 고치면 `/harness-init:sync`가 바뀐 규칙만 처리한다.
+8. 진행 내내 `rule-tests`의 일지 규칙대로 `journal.sh`에 기록하고, verifier 결과는 규칙마다 `verify`, 사람 확인은 `todo`, 전체 판정은 `verdict`로 남긴다. 마지막에 `node "${CLAUDE_PLUGIN_ROOT}/scripts/report.mjs" $ARGUMENTS`로 제작 과정 보고서를 만들고 경로를 알려준다.
