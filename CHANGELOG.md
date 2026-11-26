@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 — 2026-11-26
+
+### 문서 중심 흐름 — "코드 짜줘" 대신 "문서 고치고 sync"
+- **`/harness-init:sync`**: 규칙 문서를 마지막으로 반영한 스냅샷(`.claude/harness-synced/`)과 비교해 **바뀐 규칙만**(+추가 / ~수정 / -삭제) 테스트 → 구현 → 검사 → 보고. 삭제·`(확인 필요)`·충돌은 먼저 묻는다. 모두 ✅인 문서만 반영 완료로 표시.
+- **UserPromptSubmit 알림 훅**(`scripts/spec-reminder.sh`): 문서 변경이 반영 안 됐으면 Claude가 응답 끝에 "sync 할까요?"를 제안. 같은 상태는 한 번만 알림. `SPEC_REMINDER=0`으로 끔.
+- `scripts/spec-status.sh`: 규칙 단위 diff (번호순, 설명 문단·공백·CRLF·`**R1**:` 표기 차이 무시, 하위 폴더·문서 삭제 감지, `--mark`·`--mark-all`).
+- 설정 추가: `SPECS_DIR`(기본 `docs/specs`), `SPEC_REMINDER`.
+- `check-feature`가 끝나면 반영 완료 표시, `status`가 미반영 변경 표시, `spec` 문서에 "번호 재사용 금지" 규칙.
+
+### 고침
+- 테스트 도우미 `ok A && B`가 첫 조건만 판정하던 버그 — 0.2.0의 `verify.test.sh` 다중 조건 검사가 사실상 첫 조건만 보고 있었다. 망가뜨려 보기로 두 테스트 파일 모두 실제로 실패하는지 확인.
+
 ## 0.2.0 — 2026-11-26
 
 ### Stop 훅 보강 (`scripts/verify.sh`)

@@ -19,6 +19,8 @@ allowed-tools: Read, Grep, Glob, Bash
 | 8~9 | 보고 형식 + 명령 파일 | 30분 | ★ | 이 플러그인의 `harness-report` 스킬, `/harness-init:check-feature` | (플러그인 포함) |
 | 10 | CI | 반나절 | ★★ | `.github/workflows/`, `.gitlab-ci.yml`에서 check를 도는가 | `/harness-init:ci` |
 
+추가로 `bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" --brief`를 돌려 **코드에 반영 안 된 규칙 문서 변경**이 있으면 표 아래에 보여주고 `/harness-init:sync`를 안내한다.
+
 ## 출력
 
 1. 위 표에 `상태` 열(✅ 완료 / ⚠️ 일부 / ❌ 없음 / — 해당 없음)과 근거(파일 경로)를 붙여 보여준다.

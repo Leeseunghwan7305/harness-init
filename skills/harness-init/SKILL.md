@@ -80,6 +80,8 @@ AskUserQuestion으로 **두 가지만** 묻는다 (진단으로 알 수 있는 �
 - `CHECK_CMD` = 1단계 명령, `WATCH_PATHS` = 소스 경로들.
 - 프로젝트에 같은 일을 하는 Stop 훅이 이미 있으면 **둘 중 하나만** 쓰자고 알리고 사용자가 고르게 한다.
 - 확인: `echo '{}' | CLAUDE_PROJECT_DIR="$PWD" bash "${CLAUDE_PLUGIN_ROOT}/scripts/verify.sh"` → 종료코드 0.
+- 같은 설정으로 **문서 sync 알림 훅**(UserPromptSubmit)도 켜진다 — 규칙 문서가 바뀌고 반영 안 됐으면 Claude가 "sync 할까요?"를 제안한다. 원치 않으면 `SPEC_REMINDER=0`.
+- `docs/specs/`(또는 `SPECS_DIR`)에 **이미 규칙 문서가 있고 구현도 돼 있다면**, 기준선을 잡을지 묻는다: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" --mark-all`. 안 잡으면 전부 "새 문서"로 보여 첫 sync가 전체 재검증이 된다.
 
 ### 3~5단계 — 첫 기능 한 바퀴 (표준/전체)
 
@@ -130,6 +132,7 @@ AskUserQuestion으로 **두 가지만** 묻는다 (진단으로 알 수 있는 �
 
 다음에 할 일
 - /harness-init:spec <기능>  → 3단계부터 한 기능씩
+- 이후 수정은 문서를 고치고 /harness-init:sync
 - /harness-init:status       → 언제든 현황 점검
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "harness-init",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "어느 프로젝트든 처음 하네스를 세팅한다 — 프로젝트를 진단하고, 고른 수준(기본/표준/전체)에 맞춰 check 명령·Stop 훅·규칙 문서·규칙별 테스트·독립 검사·eval·CI를 한 번에 깐다.",
   "author": { "name": "이승환" },
   "keywords": ["harness", "init", "setup", "verification", "stop-hook", "testing", "eval", "ci"]

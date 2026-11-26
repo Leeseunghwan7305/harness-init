@@ -45,6 +45,21 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 
 현황 점검·다음 할 일 추천: `/harness-init:status`
 
+## 수정은 문서부터 — `/harness-init:sync`
+
+기능을 바꾸고 싶으면 "코드 짜줘" 대신 **규칙 문서를 고친다.**
+
+```text
+1. docs/specs/calculator.md 수정       (- R10 % 버튼은 100으로 나눈다  추가)
+2. Claude 에게 아무 말이나 걸면        → "R10 이 아직 반영 안 됐어요. sync 할까요?"   (알림 훅)
+3. /harness-init:sync  (또는 "응")     → 바뀐 규칙만 테스트 → 구현 → 검사 → 보고
+```
+
+- 비교 기준은 마지막 커밋이 아니라 **마지막으로 반영한 스냅샷**(`.claude/harness-synced/`) — 문서를 먼저 커밋해도 놓치지 않는다. 스냅샷은 코드와 같이 커밋한다.
+- 삭제된 규칙·`(확인 필요)` 규칙·충돌은 진행 전에 묻는다. 바뀐 규칙이 모두 ✅일 때만 반영 완료로 표시된다.
+- 규칙 번호는 **재사용·재배열하지 않는다** (R3을 지웠으면 다음 규칙은 R11). 번호가 곧 테스트 이름이다.
+- 이미 구현된 기능에 문서를 처음 붙이는 경우: `bash <플러그인>/scripts/spec-status.sh --mark-all`로 기준선을 잡는다 (`setup`이 물어본다).
+
 ## Stop 훅은 옵트인
 
 플러그인을 켜도 **`.claude/harness.conf`가 있는 프로젝트에서만** 검사가 돈다 (`templates/harness.conf` 참고).
@@ -64,7 +79,8 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 ## 개발
 
 ```bash
-bash tests/verify.test.sh      # 훅 시나리오 테스트
+bash tests/verify.test.sh      # Stop 훅 시나리오 테스트
+bash tests/spec-sync.test.sh   # 문서 diff · 알림 훅 테스트
 claude plugin validate .       # 매니페스트 검사
 ```
 

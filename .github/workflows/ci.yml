@@ -38,5 +38,9 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v5
-      - name: verify.sh 시나리오 테스트
-        run: bash tests/verify.test.sh
+      - name: 훅·스크립트 시나리오 테스트
+        run: |
+          for t in tests/*.test.sh; do
+            echo "== $t"
+            bash "$t" || exit 1
+          done
