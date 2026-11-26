@@ -11,6 +11,7 @@
 
 ### 레포
 - MIT 라이선스, CHANGELOG, CI(shellcheck · 훅 테스트 · JSON 검사, ubuntu + windows).
+- CI 템플릿·레포 CI: actions v5, Node 22 (Node 20 지원 종료).
 - `tests/verify.test.sh` — 훅 시나리오 테스트.
 
 ## 0.1.0 — 2026-11-26

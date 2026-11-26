@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # ── 런타임: 프로젝트에 맞게 하나만 남긴다 ──
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       # - uses: pnpm/action-setup@v4
@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 30
     needs: check
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: 관련 경로 변경 확인
@@ -48,9 +48,9 @@ jobs:
             echo "run=true" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.changed.outputs.run == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - if: steps.changed.outputs.run == 'true'
         run: npm ci && npx playwright install --with-deps chromium
