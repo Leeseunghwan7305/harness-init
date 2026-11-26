@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# 조건식을 작은따옴표 문자열로 넘겨 ok() 안에서 eval 한다 — 펼침이 늦게 일어나는 건 의도다.
+# shellcheck disable=SC2016,SC2034,SC2015
 # scripts/demo.mjs 조립 단계 테스트 — Playwright 없이 가짜 JSON 리포트로 검사한다.
 # (실제 녹화는 로컬에서 Playwright 프로젝트로 확인)
 # 실행: bash tests/demo.test.sh
