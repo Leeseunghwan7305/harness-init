@@ -109,7 +109,8 @@ AskUserQuestion으로 **두 가지만** 묻는다 (진단으로 알 수 있는 �
 
 ### 공통 — 제작 과정 보고서 준비 (표준/전체)
 
-- `.gitignore`에 `.harness/reports/`를 추가한다 (보고서는 언제든 다시 만들 수 있다). 일지 `.harness/journal/`은 커밋 대상.
+- `.gitignore`에 `.harness/reports/`와 `.harness/demo/`를 추가한다 (보고서·영상은 언제든 다시 만들 수 있다). 일지 `.harness/journal/`은 커밋 대상.
+- 화면 있는 기능이고 E2E가 있으면, 첫 기능 끝에 `/harness-init:demo <기능>`으로 데모 영상도 만들 수 있다고 안내한다.
 - 첫 기능 한 바퀴를 돌 때 `rule-tests`의 일지 규칙대로 기록하고, 끝에 `node "${CLAUDE_PLUGIN_ROOT}/scripts/report.mjs" <기능>`으로 보고서를 만들어 경로를 안내한다.
 
 ## 4. 확인

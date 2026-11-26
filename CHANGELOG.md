@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 — 2026-11-26
+
+### 데모 영상
+- **`/harness-init:demo <기능>`** (`scripts/demo.mjs`): 규칙 번호가 붙은 E2E 테스트를 Playwright로 녹화 → 규칙별 장면(`clips/*.webm`) + 이어 재생 페이지(`index.html`: 자막 · 목록 · 속도 · 장면마다 결과 화면 1.2초 유지) + ffmpeg가 있으면 `demo.mp4`(자막 트랙).
+- 프로젝트 Playwright 설정 위에 녹화 옵션만 덮어쓴 설정을 따로 만들어 실행 (설정 파일 수정 없음). 프로젝트에 설치된 Playwright CLI를 node로 직접 실행해 Windows에서도 셸 없이 동작.
+- 제작 과정 보고서에 "데모 영상" 섹션, 일지에 `video` 이벤트.
+- 실제 Playwright 1.65 + Chromium으로 계산기 예제 6개 규칙 녹화·재생 확인 (로컬). CI는 가짜 리포트로 조립 단계만 검사.
+
 ## 0.4.0 — 2026-11-26
 
 ### 제작 과정 보고서

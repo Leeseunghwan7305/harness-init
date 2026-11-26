@@ -17,12 +17,13 @@
 #   todo            사람이 확인할 것               내용: 확인할 내용
 #   verdict         전체 판정                      내용: "✅ 통과" / "❌ 실패" / "⚠️ 부분 통과"
 #   note            기타 메모
+#   video           데모 영상 생성 (demo.mjs 가 자동 기록) 내용: 재생 페이지 경로
 #
 # 기록 위치: .harness/journal/<기능>.jsonl (저장소에 커밋해 팀과 공유)
 set -uo pipefail
 
 if [ "$#" -lt 2 ]; then
-  sed -n '2,22p' "$0" >&2
+  sed -n '2,23p' "$0" >&2
   exit 1
 fi
 
@@ -34,7 +35,7 @@ shift 2
 detail="$*"
 
 case "$event" in
-  spec | test | red | impl | green | mutant-killed | mutant-survived | fix | shot | verify | todo | verdict | note) ;;
+  spec | test | red | impl | green | mutant-killed | mutant-survived | fix | shot | verify | todo | verdict | note | video) ;;
   *) echo "journal: 모르는 이벤트 '$event' (journal.sh 로 목록 확인)" >&2; exit 1 ;;
 esac
 case "$rule" in

@@ -14,3 +14,4 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash, Agent
 6. verifier 결과와 내 결과를 합쳐 `harness-report` 형식으로 보고한다. 둘이 다르면 다르다고 그대로 적는다 (verifier의 ❌를 덮지 않는다).
 7. 모든 규칙이 ✅이면 반영 완료로 표시한다: `bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" --mark $ARGUMENTS`. 이후 문서를 고치면 `/harness-init:sync`가 바뀐 규칙만 처리한다.
 8. 진행 내내 `rule-tests`의 일지 규칙대로 `journal.sh`에 기록하고, verifier 결과는 규칙마다 `verify`, 사람 확인은 `todo`, 전체 판정은 `verdict`로 남긴다. 마지막에 `node "${CLAUDE_PLUGIN_ROOT}/scripts/report.mjs" $ARGUMENTS`로 제작 과정 보고서를 만들고 경로를 알려준다.
+9. 화면 있는 기능이고 규칙 번호가 붙은 E2E가 있으면, 사용자에게 데모 영상도 만들지 묻는다 (`/harness-init:demo $ARGUMENTS` 절차). 만들면 보고서를 다시 생성해 영상 섹션을 붙인다.

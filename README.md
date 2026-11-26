@@ -77,6 +77,22 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 - 망가뜨려도 통과한 규칙은 "통과"로 세지 않는다 (⚠️ 테스트 부실).
 - `check-feature` · `sync`는 끝날 때 보고서를 자동으로 만든다.
 
+## 데모 영상 — `/harness-init:demo <기능>`
+
+규칙 번호가 붙은 E2E 테스트(`test('R2: 2 + 3 = 5', …)`)를 **녹화**해서 만든 기능을 영상으로 보여준다.
+
+```text
+.harness/demo/<기능>/
+  index.html     규칙 순서대로 이어 재생 (자막 · 목록 · 속도 조절 · 장면마다 결과 화면 1.2초 유지)
+  clips/*.webm   규칙별 장면
+  demo.mp4       ffmpeg 가 있으면 한 편으로 합친 영상 (자막 트랙 포함)
+```
+
+- 프로젝트 Playwright 설정은 건드리지 않고, 녹화 옵션(영상 켜기 · 동작 느리게 `--slowmo`)만 덮어쓴 설정으로 따로 돌린다.
+- 실패한 테스트도 장면으로 남기고 ❌로 표시한다. 제작 과정 보고서에 영상 섹션이 붙는다.
+- 화면 있는 앱만 해당. 영상은 "규칙대로 동작한다"는 증거이고, 좋은 화면인지는 사람이 본다.
+- 크기가 크니 `.harness/demo/`는 `.gitignore` 권장.
+
 ## Stop 훅은 옵트인
 
 플러그인을 켜도 **`.claude/harness.conf`가 있는 프로젝트에서만** 검사가 돈다 (`templates/harness.conf` 참고).
@@ -99,6 +115,7 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 bash tests/verify.test.sh      # Stop 훅 시나리오 테스트
 bash tests/spec-sync.test.sh   # 문서 diff · 알림 훅 테스트
 bash tests/report.test.sh      # 일지 · 보고서 · 검사 기록 테스트 (node 필요)
+bash tests/demo.test.sh        # 데모 영상 조립 테스트 (Playwright 없이 가짜 리포트로)
 claude plugin validate .       # 매니페스트 검사
 ```
 

@@ -9,7 +9,7 @@
 // 결과:   .harness/reports/<기능>.html  (캡처 이미지까지 담은 파일 하나)
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, extname, join, resolve } from 'node:path';
+import { dirname, extname, join, relative, resolve } from 'node:path';
 
 const args = process.argv.slice(2);
 const feature = args.find((a) => !a.startsWith('--'));
@@ -126,6 +126,14 @@ const computedVerdict = rules.some((r) => r.state === 'red' || (r.survived && !r
 const verdict = verdictEv?.detail || computedVerdict;
 const todos = journal.filter((e) => e.event === 'todo');
 const shots = journal.filter((e) => e.event === 'shot');
+// 데모 영상 (demo.mjs) — 영상은 무거우니 내장하지 않고 상대 경로로 건다
+const demoDir = p('.harness', 'demo', feature);
+let demo = null;
+try {
+  demo = JSON.parse(read(join(demoDir, 'manifest.json')));
+} catch {
+  demo = null;
+}
 const stats = {
   rules: rules.filter((r) => r.inSpec).length,
   // 망가뜨려도 통과한 규칙은 테스트가 부실하므로 통과로 세지 않는다
@@ -171,6 +179,7 @@ const EV = {
   todo: ['☐', '사람이 확인할 것'],
   verdict: ['🧾', '판정'],
   note: ['💬', '메모'],
+  video: ['🎬', '데모 영상'],
 };
 const BAD = new Set(['red', 'mutant-survived']);
 const GOOD = new Set(['green', 'mutant-killed']);
@@ -279,6 +288,19 @@ ${todos.length ? `<h2>사람이 확인할 것</h2><ul class="todo">${todos.map((
 <h2>타임라인</h2>
 ${timeline.length ? `<details open><summary>기록 ${timeline.length}건 — 접기/펼치기</summary><ol class="tl">${timeline.map(tlItem).join('\n')}</ol></details>` : '<p class="dim">기록된 일지가 없다.</p>'}
 <p class="dim" style="font-size:13px">과정 아이콘: 📏 문서 · 🧪 테스트 작성 · 🔴 실패 확인 · 🛠 구현 · 🟢 통과 · 🧨 망가뜨려 보기 잡음 · ⚠️ 망가뜨려도 통과 · 🔧 수정 · 📸 캡처</p>
+
+${(() => {
+  if (!demo?.clips?.length) return '';
+  const out = outIdx >= 0 ? resolve(args[outIdx + 1]) : p('.harness', 'reports', `${feature}.html`);
+  const rel = (f) => relative(dirname(out), join(demoDir, f)).split('\\').join('/');
+  return `<h2>데모 영상</h2>
+<p><a href="${esc(rel('index.html'))}">▶ 전체 데모 재생 페이지</a>${demo.mp4 ? ` · <a href="${esc(rel(demo.mp4))}">MP4</a>` : ''} <span class="dim">— 장면 ${demo.clips.length}개, 보고서와 같은 폴더 구조에서 열어야 재생된다</span></p>
+<div class="gallery">${demo.clips
+    .map(
+      (c) => `<figure><video src="${esc(rel(c.src))}" controls muted preload="metadata"></video><figcaption><b>${esc(c.rule)}</b> ${c.status === 'passed' ? '✅' : '❌'} ${esc(c.text || c.title)}</figcaption></figure>`,
+    )
+    .join('')}</div>`;
+})()}
 
 ${shots.length ? `<h2>캡처</h2><div class="gallery">${shots.map((s) => `<figure>${img(s.detail) || `<div class="dim">이미지 없음: <code>${esc(s.detail)}</code></div>`}<figcaption>${s.rule ? `${esc(s.rule)} · ` : ''}${esc(s.detail)}</figcaption></figure>`).join('')}</div>` : ''}
 
