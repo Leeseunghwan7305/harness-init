@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck scripts/*.sh tests/*.sh
+      - name: JSON 문법
+        run: |
+          for f in .claude-plugin/*.json hooks/*.json; do
+            jq empty "$f" && echo "ok $f"
+          done
+      - name: 매니페스트 버전 일치
+        run: |
+          v="$(jq -r .version .claude-plugin/plugin.json)"
+          grep -q "## $v" CHANGELOG.md || { echo "CHANGELOG.md 에 $v 항목이 없다"; exit 1; }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: eval 채점기 문법
+        run: node --check templates/eval/score.mjs
+
+  hook-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: verify.sh 시나리오 테스트
+        run: bash tests/verify.test.sh
