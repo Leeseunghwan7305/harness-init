@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -40,6 +40,13 @@ jobs:
       - uses: actions/checkout@v5
       - name: 훅·스크립트 시나리오 테스트
         run: |
+          # macOS: 사용자 기본값인 /bin/bash(3.2)로 돌린다. 러너의 Homebrew bash 5 로 돌면 3.2 전용 버그를 못 잡는다.
+          if [ "$RUNNER_OS" = macOS ]; then
+            mkdir -p "$RUNNER_TEMP/bash32"
+            ln -sf /bin/bash "$RUNNER_TEMP/bash32/bash"
+            export PATH="$RUNNER_TEMP/bash32:$PATH"
+          fi
+          bash --version | head -1
           for t in tests/*.test.sh; do
             echo "== $t"
             bash "$t" || exit 1

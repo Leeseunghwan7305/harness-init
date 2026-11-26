@@ -17,8 +17,8 @@ SPECS_DIR="docs/specs"
 SYNC_DIR=".claude/harness-synced"
 conf=".claude/harness.conf"
 if [ -f "$conf" ]; then
-  # shellcheck disable=SC1090
-  . <(tr -d '\r' <"$conf")
+  # `. <(...)` 는 macOS 기본 bash 3.2 에서 아무것도 읽지 않으므로 eval 로 읽는다.
+  eval "$(tr -d '\r' <"$conf")"
 fi
 
 mode="full"

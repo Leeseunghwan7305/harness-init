@@ -14,8 +14,8 @@ conf=".claude/harness.conf"
 
 ENABLED=1
 SPEC_REMINDER=1
-# shellcheck disable=SC1090
-. <(tr -d '\r' <"$conf")
+# `. <(...)` 는 macOS 기본 bash 3.2 에서 아무것도 읽지 않으므로 eval 로 읽는다.
+eval "$(tr -d '\r' <"$conf")"
 [ "$ENABLED" = "1" ] && [ "$SPEC_REMINDER" = "1" ] || exit 0
 
 here="$(cd "$(dirname "$0")" && pwd)"
