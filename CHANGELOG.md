@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 — 2026-11-26
+
+### 고침
+- **macOS 기본 bash 3.2에서 Stop 훅·sync 알림이 조용히 꺼지던 문제**: `. <(tr -d '\r' <conf)`가 bash 3.2에서는 아무것도 읽지 않아 `CHECK_CMD`가 비어 보이고 검사를 건너뛰었다 (exit 0이라 통과처럼 보임). `verify.sh` · `spec-reminder.sh` · `spec-status.sh`를 `eval "$(tr -d '\r' <conf)"`로 바꿈. CRLF 제거 동작은 그대로.
+- CI 훅 테스트 매트릭스에 `macos-latest` 추가 — `/bin/bash`(3.2)로 돌려 같은 종류의 회귀를 잡는다.
+
 ## 0.5.0 — 2026-11-26
 
 ### 데모 영상
