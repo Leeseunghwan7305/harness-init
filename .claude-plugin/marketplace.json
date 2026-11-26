@@ -1,0 +1,12 @@
+{
+  "name": "harness-init",
+  "owner": { "name": "이승환" },
+  "description": "AI 작업 검증 하네스 초기 세팅 플러그인",
+  "plugins": [
+    {
+      "name": "harness-init",
+      "source": "./",
+      "description": "프로젝트 진단 → 수준 선택 → check·Stop 훅·규칙 문서·테스트·검사 에이전트·eval·CI를 한 번에 세팅"
+    }
+  ]
+}

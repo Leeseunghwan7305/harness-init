@@ -1,0 +1,67 @@
+# harness CI 템플릿 — .github/workflows/harness.yml 로 복사해 프로젝트에 맞게 고친다.
+# 원칙: 결정적인 검사만 CI에. AI 판단(캡처 보고 고치기, verifier, eval)은 로컬에서.
+name: harness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: harness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    # 모든 PR: 빠른 검사 (.claude/harness.conf 의 CHECK_CMD 와 같은 한 줄)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      # ── 런타임: 프로젝트에 맞게 하나만 남긴다 ──
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # - uses: pnpm/action-setup@v4
+      # - uses: actions/setup-python@v5
+      #   with: { python-version: '3.12' }
+      # - run: pip install -e '.[dev]'
+      - name: check
+        run: npm run check
+
+  e2e:
+    # 관련 파일이 바뀐 PR에서만: E2E + 캡처 비교
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 관련 경로 변경 확인
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          if git diff --name-only "$base" HEAD | grep -qE '^(src/|app/|e2e/|tests/e2e/)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.changed.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - if: steps.changed.outputs.run == 'true'
+        run: npm ci && npx playwright install --with-deps chromium
+      - if: steps.changed.outputs.run == 'true'
+        name: e2e
+        run: npx playwright test
+      - if: failure() && steps.changed.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
