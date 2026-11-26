@@ -8,7 +8,7 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 ## 설치
 
 ```text
-/plugin marketplace add <이 폴더 경로 또는 git 저장소>
+/plugin marketplace add Leeseunghwan7305/harness-init
 /plugin install harness-init@harness-init
 ```
 
