@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: e2e-freeform-build
+description: 자유 글 계산기.md → make 가 규칙 정리 → 테스트 → 구현 → 망가뜨려 보기 → 독립 검사 → 반영 표시 → 보고서까지 실제로 한다
+tags: [e2e]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 80
+  timeout_seconds: 1500
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash, Write, Edit]
+  disallowed_tools: [AskUserQuestion]
+  append_system_prompt: |
+    평가 실행이라 사용자가 답할 수 없다. 확인 질문이 생기면 네가 추천하는 답으로 정하고, 정한 내용을 마지막 보고에 적은 뒤 끝까지 진행하라.
+  prompt: /harness-init:make 계산기.md

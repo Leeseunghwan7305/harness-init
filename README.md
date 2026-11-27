@@ -137,6 +137,9 @@ bash tests/report.test.sh      # 일지 · 보고서 · 검사 기록 테스트 
 bash tests/demo.test.sh        # 데모 영상 조립 테스트 (Playwright 없이 가짜 리포트로)
 bash tests/detect.test.sh      # 프로젝트 진단 · conf 자동 채우기 테스트
 claude plugin validate .       # 매니페스트 검사
+
+# 명령 문서(프롬프트)를 고쳤으면 — Claude 가 여전히 절차대로 움직이는지 (evals/README.md)
+claude plugin eval . --tag smoke --scaffold --ablation none --trust-plugin -j 4
 ```
 
 CI가 PR마다 shellcheck · 훅 테스트(ubuntu + windows) · JSON 검사를 돌린다. 변경은 `CHANGELOG.md`에 기록하고 `plugin.json`의 version을 올린다.

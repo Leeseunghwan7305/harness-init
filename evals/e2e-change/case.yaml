@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: e2e-change
+description: 반영된 계산기 문서에서 R2 수정 · R3 삭제 · R4 추가 → make 가 바뀐 규칙만 실제로 반영하고 R1 은 건드리지 않는다
+tags: [e2e]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 60
+  timeout_seconds: 1200
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash, Write, Edit]
+  disallowed_tools: [AskUserQuestion]
+  append_system_prompt: |
+    평가 실행이라 사용자가 답할 수 없다. 사용자는 이미 "R3 삭제는 테스트와 코드도 지워도 된다"고 허락했다.
+    다른 확인 질문은 네가 추천하는 답으로 정하고, 정한 내용을 마지막 보고에 적은 뒤 끝까지 진행하라.
+  prompt: /harness-init:make 계산기

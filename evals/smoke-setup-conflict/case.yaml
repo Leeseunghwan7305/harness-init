@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: smoke-setup-conflict
+description: 이미 같은 일을 하는 Stop 훅이 있으면 덮어쓰지 않고 둘 중 하나를 고르게 묻는다
+tags: [smoke]
+runs: 2
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 25
+  timeout_seconds: 300
+  allowed_tools: [Read, Glob, Grep, Skill]
+  disallowed_tools: [AskUserQuestion]
+  append_system_prompt: |
+    이 평가 환경에서는 파일을 쓰거나 명령을 실행할 수 없다 (읽기만 가능).
+    하네스 절차를 따르되, 실행 대신 "무엇을 어떤 순서로 할지"를 구체적으로 말하고 끝내라.
+    사용자에게 물어야 할 것이 있으면 그 질문을 그대로 적어라.
+  prompt: /harness-init:setup
