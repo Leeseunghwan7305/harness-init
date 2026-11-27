@@ -16,6 +16,7 @@
 #   verify          검사 결과 (verifier 등)        내용: "✅ 화면까지" 처럼 판정 + 확인 깊이
 #   todo            사람이 확인할 것               내용: 확인할 내용
 #   verdict         전체 판정                      내용: "✅ 통과" / "❌ 실패" / "⚠️ 부분 통과"
+#   mode            확인 강도 (make 가 시작할 때)  내용: "빠름" 또는 "꼼꼼"
 #   note            기타 메모
 #   video           데모 영상 생성 (demo.mjs 가 자동 기록) 내용: 재생 페이지 경로
 #
@@ -35,7 +36,7 @@ shift 2
 detail="$*"
 
 case "$event" in
-  spec | test | red | impl | green | mutant-killed | mutant-survived | fix | shot | verify | todo | verdict | note | video) ;;
+  spec | test | red | impl | green | mutant-killed | mutant-survived | fix | shot | verify | todo | verdict | mode | note | video) ;;
   *) echo "journal: 모르는 이벤트 '$event' (journal.sh 로 목록 확인)" >&2; exit 1 ;;
 esac
 case "$rule" in

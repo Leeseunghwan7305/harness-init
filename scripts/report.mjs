@@ -124,6 +124,10 @@ const computedVerdict = rules.some((r) => r.state === 'red' || (r.survived && !r
     ? '⚠️ 부분 통과'
     : '✅ 통과';
 const verdict = verdictEv?.detail || computedVerdict;
+// 확인 강도 — 빠름이면 무엇을 생략했는지 보고서가 직접 밝힌다
+const mode = journal.filter((e) => e.event === 'mode').at(-1)?.detail || '';
+const fast = mode.includes('빠름');
+const modeNote = fast ? '확인 강도: 빠름 — 망가뜨려 보기는 위험한 규칙만, 독립 검사 생략' : mode ? `확인 강도: ${mode}` : '';
 const todos = journal.filter((e) => e.event === 'todo');
 const shots = journal.filter((e) => e.event === 'shot');
 // 데모 영상 (demo.mjs) — 영상은 무거우니 내장하지 않고 상대 경로로 건다
@@ -178,6 +182,7 @@ const EV = {
   verify: ['🔍', '검사'],
   todo: ['☐', '사람이 확인할 것'],
   verdict: ['🧾', '판정'],
+  mode: ['⚙️', '확인 강도'],
   note: ['💬', '메모'],
   video: ['🎬', '데모 영상'],
 };
@@ -210,7 +215,7 @@ const stateCell = (r) => {
 };
 const mutCell = (r) =>
   r.killed + r.survived === 0
-    ? '<span class="dim">안 함</span>'
+    ? `<span class="dim">${fast ? '생략 (빠름)' : '안 함'}</span>`
     : r.mutationOk
       ? `✅ 잡음 ${r.killed}`
       : `❌ 통과해버림 ${r.survived}`;
@@ -264,6 +269,7 @@ button.theme { float:right; background:var(--card); color:var(--fg); border:1px 
 <h1>${esc(title)} — 제작 과정</h1>
 <p class="sub">${start ? `${fmt(start)} ~ ${fmt(end)} (${dur(start, end)})` : '일지 없음'} · 기준 문서 <code>${esc(`${specsDir}/${feature}.md`)}</code></p>
 <span class="verdict ${verdictCls}">판정: ${esc(verdict)}</span>
+${modeNote ? `<p class="dim" style="margin:10px 0 0">${esc(modeNote)}</p>` : ''}
 
 <div class="stats">
   <div class="stat"><b>${stats.green}/${stats.rules}</b><span>규칙 통과</span></div>

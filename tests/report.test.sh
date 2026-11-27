@@ -129,6 +129,20 @@ check "재료 없으면 실패" "$( { [ "$RC" = 1 ]; } && echo 0 || echo 1)"
 report calc --out "$REPO/custom/out.html"
 check "--out 경로" "$( { [ -f "$REPO/custom/out.html" ]; } && echo 0 || echo 1)"
 
+# 빠른 모드: 무엇을 생략했는지 보고서가 솔직하게 말한다
+new_repo
+j calc mode - "빠름"
+j calc green R1
+j calc green R2
+j calc mutant-killed R2 "나눗셈 검사 뒤집기 → 실패함"
+report calc
+check "빠른 모드 표시 + 생략 내용" "$( { has '확인 강도: 빠름' && has '독립 검사 생략'; } && echo 0 || echo 1)"
+check "망가뜨려 보기 안 한 규칙은 '생략 (빠름)'" "$( { has '생략 (빠름)' && ! has '>안 함<'; } && echo 0 || echo 1)"
+new_repo
+j calc green R1
+report calc
+check "모드 기록 없으면 표시 안 함 (예전 일지 호환)" "$( { ! has '확인 강도'; } && echo 0 || echo 1)"
+
 echo
 echo "결과: ${pass} 통과, ${fail} 실패"
 [ "$fail" = 0 ]

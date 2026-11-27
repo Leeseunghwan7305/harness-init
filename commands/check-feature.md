@@ -4,7 +4,7 @@ argument-hint: <기능이름>
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash, Agent
 ---
 
-`$ARGUMENTS` 기능을 하네스 전체 흐름으로 한 바퀴 돌린다.
+`$ARGUMENTS` 기능을 하네스 전체 흐름으로 한 바퀴 돌린다. (`make`에서 불렸으면 make가 고른 확인 강도를 따른다 — 처음 만드는 기능은 보통 꼼꼼.)
 
 1. `docs/specs/$ARGUMENTS.md`를 읽는다. 없으면 `/harness-init:spec`의 형식으로 초안을 만들고 **사용자 확인을 받은 뒤** 진행한다. 문서에 없는 동작은 추측하지 말고 "미확인"으로 둔다.
 2. 규칙마다 테스트를 만들고 통과시킨다 — `/harness-init:rule-tests`의 절차(모킹 원칙, 망가뜨려 보기 포함)를 따른다. 테스트 기대값을 바꿔 통과시키지 않는다.

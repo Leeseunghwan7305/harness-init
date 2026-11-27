@@ -1,6 +1,6 @@
 {
   "name": "harness-init",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "AI가 \"다 됐어요\" 하기 전에 스스로 확인하게 — setup 으로 켜고, make 하나로 문서 → 테스트 → 구현 → 검사 → 보고서·영상까지.",
   "author": { "name": "이승환" },
   "keywords": ["harness", "init", "setup", "verification", "stop-hook", "testing", "eval", "ci"]

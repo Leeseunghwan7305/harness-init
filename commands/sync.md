@@ -27,6 +27,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/spec-status.sh" $ARGUMENTS
 
 ## 3. 규칙별로 반영
 
+> `make`에서 불렸으면 make가 고른 **확인 강도(빠름/꼼꼼)**대로 망가뜨려 보기·화면 확인·독립 검사 횟수를 줄인다.
+
 규칙 번호 순서대로. 각 규칙은 `rule-tests` 명령(`${CLAUDE_PLUGIN_ROOT}/commands/rule-tests.md`)의 절차를 따른다.
 
 | 종류 | 할 일 |
