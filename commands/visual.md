@@ -1,5 +1,5 @@
 ---
-description: "[5단계] 화면 상태를 캡처해 직접 보고, 규칙 문서와 다르거나 어색한 곳을 고친다 (최대 3회)"
+description: "(고급 — 보통은 make) 화면 상태를 캡처해 직접 보고, 규칙 문서와 다르거나 어색한 곳을 고친다 (최대 3회)"
 argument-hint: <기능이름> [URL]
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 ---

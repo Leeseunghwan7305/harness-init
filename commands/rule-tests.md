@@ -1,5 +1,5 @@
 ---
-description: "[4단계] 규칙 문서의 규칙마다 테스트를 만들고, 일부러 망가뜨려 진짜 테스트인지 확인한다"
+description: "(고급 — 보통은 make) 규칙 문서의 규칙마다 테스트를 만들고, 일부러 망가뜨려 진짜 테스트인지 확인한다"
 argument-hint: <기능이름>
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 ---

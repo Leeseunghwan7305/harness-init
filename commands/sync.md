@@ -1,5 +1,5 @@
 ---
-description: 규칙 문서(docs/specs)에서 바뀐 규칙만 찾아 테스트·구현·검사까지 반영한다 — "코드 짜줘" 대신 "문서 고치고 sync"
+description: (고급 — 보통은 make) 규칙 문서(docs/specs)에서 바뀐 규칙만 찾아 테스트·구현·검사까지 반영한다 — "코드 짜줘" 대신 "문서 고치고 sync"
 argument-hint: '[선택: 기능이름 — 비우면 바뀐 문서 전부]'
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash, Agent, AskUserQuestion
 ---

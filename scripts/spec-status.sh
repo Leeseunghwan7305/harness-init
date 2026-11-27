@@ -6,6 +6,8 @@
 #   spec-status.sh --brief [이름]     한 줄 요약 (calculator: +R10 ~R7 -R3)
 #   spec-status.sh --mark <이름|경로> 이 문서를 "반영 완료"로 표시 (스냅샷 갱신)
 #   spec-status.sh --mark-all         모든 문서를 반영 완료로 표시 (기존 프로젝트 기준선 잡기)
+#   spec-status.sh --state <이름|경로> 한 단어로 상태: missing | freeform | new | changed | synced
+#                                     (make 명령이 무엇을 할지 고르는 데 쓴다)
 #
 # 규칙 줄 형식: "- R<번호> 내용"  (번호는 재사용·재배열하지 않는다)
 # 스냅샷: $SYNC_DIR/<이름>.md — 저장소에 커밋해 다른 컴퓨터와 공유한다.
@@ -27,7 +29,8 @@ case "${1:-}" in
   --brief) mode="brief"; target="${2:-}" ;;
   --mark) mode="mark"; target="${2:-}" ;;
   --mark-all) mode="mark-all" ;;
-  -h | --help) sed -n '2,12p' "$0"; exit 0 ;;
+  --state) mode="state"; target="${2:-}" ;;
+  -h | --help) sed -n '2,14p' "$0"; exit 0 ;;
   *) target="${1:-}" ;;
 esac
 
@@ -42,6 +45,7 @@ resolve() {
 # 문서 경로 → 이름 (SPECS_DIR 기준 상대경로, .md 제외)
 name_of() {
   local p="${1#./}"
+  p="${p#"$PWD"/}"   # 절대 경로로 받아도 프로젝트 기준으로
   p="${p#"$SPECS_DIR"/}"
   printf '%s\n' "${p%.md}"
 }
@@ -98,6 +102,16 @@ case "$mode" in
     ;;
   mark-all)
     specs | while IFS= read -r s; do mark "$s"; done
+    exit 0
+    ;;
+  state)
+    [ -n "$target" ] || { echo "사용법: spec-status.sh --state <이름|경로>" >&2; exit 1; }
+    spec="$(resolve "$target")" || { echo missing; exit 0; }
+    if [ -z "$(rules_of "$spec")" ]; then echo freeform
+    elif [ ! -f "$SYNC_DIR/$(name_of "$spec").md" ]; then echo new
+    elif [ -n "$(diff_rules "$SYNC_DIR/$(name_of "$spec").md" "$spec")" ]; then echo changed
+    else echo synced
+    fi
     exit 0
     ;;
 esac

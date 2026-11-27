@@ -12,53 +12,72 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 /plugin install harness-init@harness-init
 ```
 
-## 시작
+## 쓰는 법 — 명령 3개
 
 ```text
-/harness-init:setup            # 진단 → 수준 선택 → 설치 → 확인 → 안내
-/harness-init:setup basic      # 바로 기본(1~2단계)으로
+/harness-init:setup            처음 한 번. 질문 없이 진단해서 켠다
+/harness-init:make 계산기       만들기 · 고치기 전부 (또는 그냥 "계산기 만들어줘")
+/harness-init:status           지금 상태와 다음 할 일
 ```
 
-"하네스 세팅해줘"라고 말해도 `harness-init` 스킬이 같은 흐름을 탄다.
+### 만들기
 
-### 세팅 수준
+```text
+1. 계산기.md 를 아무렇게나 쓴다        "숫자 두 개 더하기 빼기. 0으로 나누면 오류 표시."
+2. /harness-init:make 계산기.md     → 글을 규칙 목록(R1, R2 …)으로 정리 → 애매한 것만 한 번 물어봄
+                                    → 규칙별 테스트 → 구현 → 일부러 망가뜨려 보기 → 화면 확인 → 독립 검사
+                                    → 보고서 + (E2E 있으면) 데모 영상
+```
 
-| 수준 | 단계 | 이런 때 |
+문서가 없으면 초안부터 쓰고, 이미 규칙 문서가 있으면 바로 만든다.
+
+### 고치기
+
+```text
+1. docs/specs/계산기.md 수정          (- R10 % 버튼은 100으로 나눈다  추가)
+2. /harness-init:make 계산기          → 바뀐 규칙만 다시 테스트 → 구현 → 검사 → 보고서
+   (아무 말이나 걸어도 Claude 가 "반영할까요?" 하고 먼저 물어본다)
+```
+
+- 지운 규칙 · `(확인 필요)` 규칙 · 충돌은 진행 전에 묻는다.
+- 규칙 번호는 **재사용하지 않는다** (R3을 지웠으면 다음 규칙은 R11). 번호가 곧 테스트 이름이다.
+
+## 3단계
+
+| 단계 | 하는 일 | 명령 |
 | --- | --- | --- |
-| **기본** (추천) | 1~2 | 처음. check 명령 + Stop 훅만으로도 체감이 크다 |
-| **표준** | 1~6, 8~9 | 기능 하나로 규칙 문서 → 테스트 → 캡처 → 독립 검사 한 바퀴 |
-| **전체** | 1~10 | 표준 + eval(AI 기능 있을 때) + CI |
+| **1. 켜기** | check 명령(타입 · 린트 · 테스트) + 끝내기 전 자동 검사 + 문서 변경 알림 | `setup` |
+| **2. 만들기** | 규칙 문서 → 규칙별 테스트 + 망가뜨려 보기 → 구현 → 화면 확인 → 독립 검사 → 보고서 · 영상 | `make` |
+| **3. 넓히기** (선택) | AI 기능 품질 점수(eval) · PR마다 검사(CI) | `eval` · `ci` |
 
-## 10단계 ↔ 구성 요소
+<details>
+<summary>고급 — make 가 안에서 쓰는 명령들 (따로 불러도 된다)</summary>
 
-| 순서 | 할 일 | 시간 | 효과 | 구성 요소 |
-| --- | --- | --- | --- | --- |
-| 1 | 빠른 검사 + `check` 명령 | 반나절 | ★★★ | `setup`이 세팅 |
-| 2 | Stop 훅으로 루프 닫기 | 1시간 | ★★★ | 내장 훅 `scripts/verify.sh` + `.claude/harness.conf` |
-| 3 | 기능 하나의 규칙 문서 | 10분 | ★★ | `/harness-init:spec <기능>` |
-| 4 | 규칙별 테스트 + 망가뜨려 보기 | 1~2시간 | ★★★ | `/harness-init:rule-tests <기능>` |
-| 5 | 캡처 검사 | 1시간 | ★★ | `/harness-init:visual <기능>` |
-| 6 | 독립 검사 서브에이전트 | 30분 | ★★ | `verifier` 에이전트 (읽기 전용) |
-| 7 | eval (AI 기능 있을 때만) | 반나절 | ★★★ | `/harness-init:eval` + `templates/eval/score.mjs` |
-| 8~9 | 보고 형식 + 명령 파일 | 30분 | ★ 편의 | `harness-report` 스킬 + `/harness-init:check-feature <기능>` |
-| 10 | CI | 반나절 | ★★ | `/harness-init:ci` + `templates/ci/harness.yml` |
+| 명령 | 하는 일 |
+| --- | --- |
+| `spec <기능>` | 규칙 문서만 쓰기 |
+| `check-feature <기능>` | 새 기능 처음부터 (테스트 → 구현 → 검사 → 보고) |
+| `sync [기능]` | 문서에서 바뀐 규칙만 반영 |
+| `rule-tests <기능>` | 규칙별 테스트 + 망가뜨려 보기만 |
+| `visual <기능>` | 화면 캡처 확인만 (최대 3회) |
+| `report <기능>` | 제작 과정 보고서만 |
+| `demo <기능>` | 데모 영상만 |
 
-현황 점검·다음 할 일 추천: `/harness-init:status`
+`verifier` 에이전트(독립 검사, 읽기 전용) · `harness-report` 스킬(보고 형식) · `harness-make` 스킬("만들어줘"를 make 흐름으로)도 들어 있다.
+</details>
 
-## 수정은 문서부터 — `/harness-init:sync`
+### setup 이 알아서 채우는 것
 
-기능을 바꾸고 싶으면 "코드 짜줘" 대신 **규칙 문서를 고친다.**
+`scripts/detect.mjs`가 프로젝트를 보고 `.claude/harness.conf`를 채운다 (있으면 안 건드림).
 
-```text
-1. docs/specs/calculator.md 수정       (- R10 % 버튼은 100으로 나눈다  추가)
-2. Claude 에게 아무 말이나 걸면        → "R10 이 아직 반영 안 됐어요. sync 할까요?"   (알림 훅)
-3. /harness-init:sync  (또는 "응")     → 바뀐 규칙만 테스트 → 구현 → 검사 → 보고
-```
+| 프로젝트 | check 명령 (추측) |
+| --- | --- |
+| Node (npm · pnpm · yarn · bun) | `check` 스크립트가 있으면 그것, 없으면 있는 `typecheck` · `lint` · `test`를 묶음 |
+| Python (uv · poetry · pip) | `ruff` · `mypy` · `pytest` 중 쓰는 것 |
+| Go · Rust · Gradle · Maven | `go vet + go test` · `cargo clippy + test` · `gradle check` · `mvn verify` |
+| `Makefile`에 `check:` | `make check` 우선 |
 
-- 비교 기준은 마지막 커밋이 아니라 **마지막으로 반영한 스냅샷**(`.claude/harness-synced/`) — 문서를 먼저 커밋해도 놓치지 않는다. 스냅샷은 코드와 같이 커밋한다.
-- 삭제된 규칙·`(확인 필요)` 규칙·충돌은 진행 전에 묻는다. 바뀐 규칙이 모두 ✅일 때만 반영 완료로 표시된다.
-- 규칙 번호는 **재사용·재배열하지 않는다** (R3을 지웠으면 다음 규칙은 R11). 번호가 곧 테스트 이름이다.
-- 이미 구현된 기능에 문서를 처음 붙이는 경우: `bash <플러그인>/scripts/spec-status.sh --mark-all`로 기준선을 잡는다 (`setup`이 물어본다).
+추측한 명령은 실제로 한 번 돌려 확인하고, 없는 검사(린트 등)는 추가를 제안한다.
 
 ## 제작 과정 보고서 — `/harness-init:report <기능>`
 
@@ -75,7 +94,7 @@ AI가 "다 됐어요"라고 말하기 전에 스스로 확인하게 만든다.
 - 일지: `.harness/journal/<기능>.jsonl` — `rule-tests` · `sync` · `check-feature`가 단계마다 `scripts/journal.sh`로 자동 기록. **커밋해서 팀과 공유.**
 - 보고서: `.harness/reports/<기능>.html` — 언제든 다시 만들 수 있으니 `.gitignore` 권장 (`setup`이 추가).
 - 망가뜨려도 통과한 규칙은 "통과"로 세지 않는다 (⚠️ 테스트 부실).
-- `check-feature` · `sync`는 끝날 때 보고서를 자동으로 만든다.
+- `make`는 끝날 때 보고서(와 가능하면 영상)를 자동으로 만든다.
 
 ## 데모 영상 — `/harness-init:demo <기능>`
 
@@ -116,6 +135,7 @@ bash tests/verify.test.sh      # Stop 훅 시나리오 테스트
 bash tests/spec-sync.test.sh   # 문서 diff · 알림 훅 테스트
 bash tests/report.test.sh      # 일지 · 보고서 · 검사 기록 테스트 (node 필요)
 bash tests/demo.test.sh        # 데모 영상 조립 테스트 (Playwright 없이 가짜 리포트로)
+bash tests/detect.test.sh      # 프로젝트 진단 · conf 자동 채우기 테스트
 claude plugin validate .       # 매니페스트 검사
 ```
 
@@ -128,7 +148,7 @@ MIT
 ## 흔한 함정 5가지
 
 1. AI가 테스트를 고쳐서 통과시킴 → verifier가 "기대값만 바뀐 diff"를 의심한다. 망가뜨려 보기로 확인.
-2. 처음부터 전부 자동화하려다 지침 → 기본 수준으로 시작, 기능 하나씩 넓힌다.
+2. 처음부터 전부 자동화하려다 지침 → 켜기만 하고, 기능 하나씩 make 로 넓힌다.
 3. 기준 문서가 낡음 → 기획이 바뀌면 문서부터.
 4. 느린 검사를 훅에 넣음 → 훅에는 check만.
 5. "통과"만 보고 믿음 → 항상 "어디까지 확인했는지"를 같이 받는다.

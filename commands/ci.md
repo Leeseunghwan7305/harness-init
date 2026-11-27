@@ -1,5 +1,5 @@
 ---
-description: "[10단계] check 명령을 PR마다 도는 CI(GitHub Actions 등)로 올린다"
+description: "(3단계 넓히기) check 명령을 PR마다 도는 CI(GitHub Actions 등)로 올린다"
 argument-hint: '[선택: github | gitlab]'
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 ---

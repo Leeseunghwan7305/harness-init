@@ -1,5 +1,5 @@
 ---
-description: "[3단계] 기능 하나의 규칙 문서(docs/specs/<기능>.md)를 번호 붙은 규칙 목록으로 쓴다"
+description: "(고급 — 보통은 make) 기능 하나의 규칙 문서(docs/specs/<기능>.md)를 번호 붙은 규칙 목록으로 쓴다"
 argument-hint: <기능이름>
 allowed-tools: Read, Write, Edit, Grep, Glob
 ---
@@ -36,4 +36,4 @@ allowed-tools: Read, Write, Edit, Grep, Glob
 - **번호는 재사용·재배열하지 않는다.** 규칙을 지우면 그 번호는 비워 두고, 새 규칙은 가장 큰 번호 다음을 쓴다. 번호가 테스트 이름과 sync 비교의 열쇠다.
 - 규칙 줄은 `- R<번호> 내용` 형식을 지킨다 (sync가 이 형식으로 규칙을 인식한다).
 
-다음 단계 안내: `/harness-init:rule-tests $ARGUMENTS` (4단계). 이미 구현된 기능이면 문서를 고친 뒤 `/harness-init:sync`로 바뀐 규칙만 반영한다.
+다음 안내: `/harness-init:make $ARGUMENTS` — 테스트부터 구현·검사·보고서까지 이어서 한다. 나중에 문서를 고쳐도 같은 명령으로 바뀐 규칙만 반영된다.

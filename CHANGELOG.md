@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0 — 2026-11-27
+
+### 더 쉽게 — 명령 3개, 3단계
+- **`/harness-init:make <기능 | 문서>`**: 만들기·고치기를 한 명령으로. 문서 상태를 보고 스스로 고른다 — 없음 → 초안, 자유 글 → 규칙 정리, 새 규칙 → 처음부터, 바뀜 → 바뀐 규칙만, 그대로 → 끝. 보고서·데모 영상은 묻지 않고 만든다. 마지막 보고에서 내부 용어(verifier · sync · 스냅샷 · Stop 훅)를 쓰지 않는다.
+- **자유 문서 지원**: 규칙 줄 없이 아무렇게나 쓴 `계산기.md`도 OK — 글은 그대로 두고 `## 규칙` 절을 붙여 확인받는다. 루트 등 `docs/specs` 밖 문서는 옮겨 온다.
+- **`harness-make` 스킬**: 하네스가 켜진 프로젝트에서 "계산기 만들어줘"라고 말해도 make 흐름을 탄다.
+- **10단계 → 3단계** (켜기 · 만들기 · 넓히기). setup의 기본/표준/전체 선택 제거 — 질문 없이 켜기만 하고, 나머지는 make가 필요할 때 한다. `status`도 3단계 기준.
+- **`scripts/detect.mjs`**: Node(npm·pnpm·yarn·bun) · Python(uv·poetry) · Go · Rust · Gradle · Maven · Makefile을 보고 check 명령·감시 경로를 추측해 `harness.conf`를 채운다 (있으면 안 건드림). 화면·E2E·LLM·CI 여부도 진단.
+- `spec-status.sh --state <이름>`: missing / freeform / new / changed / synced.
+- 문서 변경 알림이 `make`를 제안. 나머지 명령은 "고급"으로 남김 (그대로 동작).
+
+### 고침
+- `spec-status.sh`에 문서를 절대 경로로 넘기면 이름을 못 뽑아 `--mark`가 엉뚱한 스냅샷을 만들던 버그.
+
 ## 0.5.1 — 2026-11-26
 
 ### 고침

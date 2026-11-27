@@ -104,6 +104,28 @@ st --brief
 check "SPECS_DIR 설정 반영" "$( { [ "$OUT" = "x: +R1" ]; } && echo 0 || echo 1)"
 
 echo
+echo "spec-status.sh --state"
+
+new_repo
+st --state calc
+check "문서 없음 → missing" "$( { [ "$OUT" = missing ]; } && echo 0 || echo 1)"
+printf '%s
+' "# 계산기" "" "숫자 두 개를 더하고 빼는 계산기. 0으로 나누면 오류." >"$REPO/docs/specs/calc.md"
+st --state calc
+check "규칙 줄 없는 자유 문서 → freeform" "$( { [ "$OUT" = freeform ]; } && echo 0 || echo 1)"
+spec calc "- R1 x"
+st --state calc
+check "규칙 있고 반영 전 → new" "$( { [ "$OUT" = new ]; } && echo 0 || echo 1)"
+st --mark calc
+st --state calc
+check "반영 후 그대로 → synced" "$( { [ "$OUT" = synced ]; } && echo 0 || echo 1)"
+spec calc "- R1 x" "- R2 y"
+st --state "$REPO/docs/specs/calc.md"
+check "규칙 바뀜 (경로로 지정) → changed" "$( { [ "$OUT" = changed ]; } && echo 0 || echo 1)"
+st --state
+check "이름 없으면 사용법 + 실패" "$( { [ "$RC" = 1 ] && has '사용법'; } && echo 0 || echo 1)"
+
+echo
 echo "spec-reminder.sh"
 
 new_repo
@@ -118,7 +140,7 @@ check "변경 없으면 조용함" "$( { [ "$RC" = 0 ] && [ -z "$OUT" ]; } && ec
 
 spec calc "- R1 x" "- R2 y"
 rm_
-check "변경 있으면 알림 + sync 제안" "$( { has 'calc: +R1 +R2' && has '/harness-init:sync'; } && echo 0 || echo 1)"
+check "변경 있으면 알림 + sync 제안" "$( { has 'calc: +R1 +R2' && has '/harness-init:make'; } && echo 0 || echo 1)"
 rm_
 check "같은 상태면 다시 안 알림" "$( { [ -z "$OUT" ]; } && echo 0 || echo 1)"
 

@@ -1,10 +1,7 @@
 ---
-description: 이 프로젝트에 하네스를 처음 세팅한다 — 진단 → 수준 선택(기본/표준/전체) → 설치 → 확인 → 안내
-argument-hint: '[선택: basic | standard | full]'
-allowed-tools: Read, Edit, Write, Grep, Glob, Bash, Agent, AskUserQuestion
+description: 이 프로젝트에 하네스를 켠다 — 질문 없이 진단 → check 명령 + 자동 검사 켜기 → 확인 → 사용법 안내
+allowed-tools: Read, Edit, Write, Grep, Glob, Bash, AskUserQuestion
 ---
 
-`harness-init` 스킬을 불러 그 절차대로 이 프로젝트의 하네스를 초기 세팅한다.
-
-- `$ARGUMENTS`가 `basic` / `standard` / `full` 이면 "세팅 수준" 질문은 건너뛰고 그 수준으로 진행한다 (각각 기본 1~2 / 표준 1~6·8~9 / 전체 1~10).
-- 비어 있으면 진단 결과를 보여준 뒤 수준을 묻는다.
+`harness-init` 스킬을 불러 그 절차대로 이 프로젝트에 하네스를 켠다.
+수준을 묻지 않는다. 끝나면 기능은 `/harness-init:make <기능>` 하나로 만든다고 안내한다.

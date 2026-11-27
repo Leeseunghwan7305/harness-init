@@ -1,5 +1,5 @@
 ---
-description: "[7단계] 정답이 없는 AI 기능(요약·분류·추출)에 골든 세트 + 필드별 정확도 eval을 붙인다"
+description: "(3단계 넓히기) 정답이 없는 AI 기능(요약·분류·추출)에 골든 세트 + 필드별 정확도 eval을 붙인다"
 argument-hint: <기능이름 또는 AI 호출 위치>
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 ---
