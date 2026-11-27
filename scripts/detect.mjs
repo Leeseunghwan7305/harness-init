@@ -23,6 +23,56 @@ const read = (p) => {
 };
 const firstDirs = (cands) => cands.filter((d) => has(d)).map((d) => d + '/');
 
+// pnpm-workspace.yaml 의 packages 또는 package.json 의 workspaces → 실제 폴더 목록 ("apps/*" 정도만 펼친다)
+function workspaceDirs(pkg) {
+  const globs = [];
+  for (const m of read('pnpm-workspace.yaml').matchAll(/^\s*-\s*['"]?([^'"\s#]+)['"]?/gm)) globs.push(m[1]);
+  const ws = Array.isArray(pkg.workspaces) ? pkg.workspaces : pkg.workspaces?.packages || [];
+  globs.push(...ws);
+  const out = [];
+  for (const g of globs) {
+    if (g.startsWith('!')) continue;
+    const base = g.replace(/\/\*+$/, '');
+    if (base === g) {
+      if (has(g)) out.push(g);
+      continue;
+    }
+    try {
+      for (const e of readdirSync(join(root, base), { withFileTypes: true })) if (e.isDirectory()) out.push(join(base, e.name));
+    } catch {
+      /* 없는 폴더 */
+    }
+  }
+  return out;
+}
+
+// SDK 없이 fetch 로 LLM API 를 부르는 코드도 찾는다 (소스 파일 최대 3000개만 훑음)
+function callsLlmApi() {
+  const skip = new Set(['node_modules', '.git', 'dist', 'build', '.next', 'out', 'coverage', '.harness', 'vendor', '.venv']);
+  const re = /api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com/;
+  let budget = 3000;
+  const walk = (dir) => {
+    let entries;
+    try {
+      entries = readdirSync(join(root, dir), { withFileTypes: true });
+    } catch {
+      return false;
+    }
+    for (const e of entries) {
+      if (budget <= 0) return false;
+      const p = join(dir, e.name);
+      if (e.isDirectory()) {
+        if (!skip.has(e.name) && walk(p)) return true;
+      } else if (/\.(m?[jt]sx?|py|go)$/.test(e.name)) {
+        budget--;
+        if (re.test(read(p))) return true;
+      }
+    }
+    return false;
+  };
+  return walk('');
+}
+
 function node() {
   let pkg = {};
   try {
@@ -56,9 +106,19 @@ function node() {
     else missing.push('test');
     checkCmd = parts.join(' && ');
   }
+  // 모노레포: 화면·AI·E2E 의존성은 보통 apps/* · packages/* 안에 있다
+  const pkgDirs = ['', ...workspaceDirs(pkg)];
+  for (const d of pkgDirs.slice(1)) {
+    try {
+      const sub = JSON.parse(read(join(d, 'package.json')));
+      Object.assign(deps, sub.dependencies, sub.devDependencies);
+    } catch {
+      /* package.json 없는 폴더 */
+    }
+  }
   const ui = ['next', 'react', 'vue', 'svelte', '@sveltejs/kit', 'vite', '@angular/core', 'solid-js', 'nuxt', 'astro'].some((d) => d in deps) || has('index.html');
-  const llm = Object.keys(deps).some((d) => /^(@anthropic-ai\/|openai$|@ai-sdk\/|ai$|langchain|@langchain\/)/.test(d));
-  const e2e = '@playwright/test' in deps || ['playwright.config.ts', 'playwright.config.js', 'playwright.config.mjs'].some(has);
+  const llm = Object.keys(deps).some((d) => /^(@anthropic-ai\/|openai$|@ai-sdk\/|ai$|langchain|@langchain\/)/.test(d)) || callsLlmApi();
+  const e2e = '@playwright/test' in deps || pkgDirs.some((d) => ['playwright.config.ts', 'playwright.config.js', 'playwright.config.mjs'].some((f) => has(join(d, f))));
   const watch = firstDirs(['src', 'app', 'apps', 'packages', 'lib', 'pages', 'components', 'server', 'test', 'tests', '__tests__', 'e2e']);
   if (watch.length) watch.push('package.json'); // 소스 폴더가 없으면 비워 둔다 = 저장소 전체 감시
   return { stack: 'node', pm, checkCmd, watch, missing, ui, llm, e2e, hasCheckScript: !!scripts.check };

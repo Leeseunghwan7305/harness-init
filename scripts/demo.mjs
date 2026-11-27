@@ -179,11 +179,14 @@ const srtTime = (s) => {
   return `${p(Math.floor(ms / 3_600_000))}:${p(Math.floor(ms / 60_000) % 60)}:${p(Math.floor(ms / 1000) % 60)},${p(ms % 1000, 3)}`;
 };
 const mark = (st) => (st === 'passed' ? '✅' : st === 'skipped' ? '⏭' : '❌');
+// MP4 는 장면마다 마지막 화면을 HOLD_SEC 동안 붙잡아 둔다 (재생 페이지의 1.2초 유지와 같게). 자막도 그 길이에 맞춘다.
+const HOLD_SEC = 1.2;
 let t = 0;
 const srt = clips
   .map((c, i) => {
-    const line = `${i + 1}\n${srtTime(t)} --> ${srtTime(t + c.duration)}\n${mark(c.status)} ${c.rule} ${c.text || c.title}\n`;
-    t += c.duration;
+    const end = t + c.duration + HOLD_SEC;
+    const line = `${i + 1}\n${srtTime(t)} --> ${srtTime(end)}\n${mark(c.status)} ${c.rule} ${c.text || c.title}\n`;
+    t = end;
     return line;
   })
   .join('\n');
@@ -192,14 +195,16 @@ writeFileSync(join(outDir, 'demo.srt'), srt);
 // ── 4. MP4 (선택) ────────────────────────────────────────
 let mp4 = '';
 if (wantMp4 && has('ffmpeg')) {
-  const list = join(outDir, 'concat.txt');
-  writeFileSync(list, clips.map((c) => `file '${posix(join(outDir, c.src)).replace(/'/g, "'\\''")}'`).join('\n'));
+  // 장면마다 마지막 프레임을 HOLD_SEC 동안 복제(tpad)한 뒤 이어 붙인다 — 동작 없이 확인만 하는 규칙도 결과 화면이 보이게.
+  const n = clips.length;
+  const chains = clips.map((_, i) => `[${i}:v]scale=trunc(iw/2)*2:trunc(ih/2)*2,fps=25,setsar=1,tpad=stop_mode=clone:stop_duration=${HOLD_SEC}[v${i}]`);
+  const filter = `${chains.join(';')};${clips.map((_, i) => `[v${i}]`).join('')}concat=n=${n}:v=1:a=0[out]`;
   try {
     execFileSync(
       'ffmpeg',
-      ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-i', join(outDir, 'demo.srt'),
-        '-map', '0:v', '-map', '1', '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
-        '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:s', 'mov_text', '-metadata:s:s:0', 'language=kor',
+      ['-y', '-loglevel', 'error', ...clips.flatMap((c) => ['-i', join(outDir, c.src)]), '-i', join(outDir, 'demo.srt'),
+        '-filter_complex', filter, '-map', '[out]', '-map', String(n), '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+        '-c:s', 'mov_text', '-metadata:s:s:0', 'language=kor',
         join(outDir, 'demo.mp4')],
       { stdio: 'inherit' },
     );

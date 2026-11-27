@@ -150,8 +150,9 @@ log_check pass 0
 
 # ── 테스트만 고쳐서 통과시켰는지 경고 (상태마다 한 번) ─────────
 if [ "$TEST_GUARD" = "1" ] && [ "$in_git" = "1" ] && [ -n "$modified" ]; then
-  mod_tests="$(printf '%s\n' "$modified" | grep -E "$TEST_PATTERN" || true)"
-  src_changes="$(printf '%s\n' "$changed" | grep -vE "$TEST_PATTERN" || true)"
+  # 문서(.md — 규칙 문서 docs/specs/ 포함)는 테스트도 기능 코드도 아니다. `specs?/` 패턴에 걸리지 않게 뺀다.
+  mod_tests="$(printf '%s\n' "$modified" | grep -vE '\.(md|mdx)$' | grep -E "$TEST_PATTERN" || true)"
+  src_changes="$(printf '%s\n' "$changed" | grep -vE '\.(md|mdx)$' | grep -vE "$TEST_PATTERN" || true)"
   if [ -n "$mod_tests" ] && [ -z "$src_changes" ] && [ "$fp" != "$(cat "$state_dir/guard_warned" 2>/dev/null)" ]; then
     printf '%s\n' "$fp" >"$state_dir/guard_warned" 2>/dev/null
     {

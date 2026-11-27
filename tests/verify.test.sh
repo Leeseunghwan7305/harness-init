@@ -126,6 +126,16 @@ echo 'new' >"$REPO/tests/b.test.ts"
 run '{}'
 check "새 테스트 추가만은 경고 없음" "$( { [ "$RC" = 0 ]; } && echo 0 || echo 1)"
 
+# 10-1. 규칙 문서(docs/specs/*.md)만 수정 → 테스트로 오인해 경고하지 않음 (실제 세션에서 발견)
+new_repo
+conf "CHECK_CMD='true'" 'WATCH_PATHS=""'
+mkdir -p "$REPO/docs/specs"
+echo '- R1 x' >"$REPO/docs/specs/calc.md"
+commit_all
+echo '- R1 y' >"$REPO/docs/specs/calc.md"
+run '{}'
+check "규칙 문서만 수정은 테스트 수정으로 안 봄" "$( { [ "$RC" = 0 ] && ! grep -q '⚠' <<<"$ERR"; } && echo 0 || echo 1)"
+
 # 11. TEST_GUARD=0
 new_repo
 conf "CHECK_CMD='true'" 'WATCH_PATHS="tests/"' 'TEST_GUARD=0'

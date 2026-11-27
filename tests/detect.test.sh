@@ -44,6 +44,17 @@ check "LLM 의존성 감지" "$(ok '[ "$(field llm)" = true ]')"
 check "소스 폴더 없으면 감시 경로 비움 (= 전체)" "$(ok '[ -z "$(field watch)" ]')"
 
 new_repo
+printf '{"scripts":{"typecheck":"x","lint":"x","test":"x"}}' >"$REPO/package.json"
+printf "packages:\n  - 'apps/*'\n" >"$REPO/pnpm-workspace.yaml"
+mkdir -p "$REPO/apps/web" "$REPO/apps/api/src"
+printf '{"dependencies":{"next":"15"},"devDependencies":{"@playwright/test":"1"}}' >"$REPO/apps/web/package.json"
+printf '{"dependencies":{"@nestjs/core":"10"}}' >"$REPO/apps/api/package.json"
+printf 'fetch("https://api.anthropic.com/v1/messages")\n' >"$REPO/apps/api/src/claude.service.ts"
+run
+check "모노레포: 하위 패키지의 화면 · E2E 의존성 감지 (실제 세션에서 발견)" "$(ok '[ "$(field pm)" = pnpm ] && [ "$(field ui)" = true ] && [ "$(field e2e)" = true ]')"
+check "SDK 없이 fetch 로 LLM API 부르는 코드 감지" "$(ok '[ "$(field llm)" = true ]')"
+
+new_repo
 printf '[tool.ruff]\n[tool.pytest.ini_options]\n' >"$REPO/pyproject.toml"
 touch "$REPO/uv.lock"
 run
